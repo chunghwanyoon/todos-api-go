@@ -1,12 +1,13 @@
 package server
 
 import (
+	"database/sql"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"todos-api-go/api"
 	"todos-api-go/config"
-	"todos-api-go/services"
+	"todos-api-go/controllers"
 	"todos-api-go/utils"
 )
 
@@ -15,20 +16,30 @@ type TodoServer struct {
 	config.Config
 }
 
-func NewServer(cfg config.Config, todoService *services.TodoService) (*TodoServer, error) {
+func NewServer(cfg config.Config, db *sql.DB) (*TodoServer, error) {
 	server := echo.New()
 	server.Use(
 		middleware.Recover(),
-		// TODO: logger middleware
+		// TODO: other middlewares
 	)
-	server.Validator = &utils.Validator{Validator: validator.New()}
+	server.Validator = &utils.CustomValidator{Validator: validator.New()}
 
 	health := server.Group("/status")
 	{
 		health.GET("", api.HealthCheck())
 	}
 
-	//v1 := server.Group("api/v1/todos/v1")
+	// Initialize Controllers
+	todoController := controllers.NewTodoController(db, cfg.Setting())
+
+	v1 := server.Group("api/v1/todos")
+	{
+		v1.GET("", api.HandleGetTodos(todoController))
+		v1.GET("/:todoId", api.HandleGetTodoById(todoController))
+		//v1.POST("", api.HandleCreateTodo(todoController))
+		//v1.PUT("", api.HandleUpdateTodo(todoController))
+		//v1.DELETE("", api.HandleDeleteTodo(todoController))
+	}
 
 	return &TodoServer{
 		Echo:   server,

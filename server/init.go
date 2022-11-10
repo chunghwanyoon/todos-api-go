@@ -10,17 +10,14 @@ import (
 func Init(cfg config.Config) {
 	settings := cfg.Setting()
 
-	// Initialize DB instance
-	//db, err := config.NewDB(settings)
-	//if err != nil {
-	//	logger.Fatalf("Creating new DB instance failed - %+v", err)
-	//}
-
-	// Initialize service instances
-	// TODO:
+	//Initialize DB instance
+	db, err := config.NewDB(settings)
+	if err != nil {
+		logger.Fatalf("Creating new DB instance failed - %+v", err)
+	}
 
 	// Initialize Http Echo Server
-	server, err := NewServer(cfg, nil)
+	server, err := NewServer(cfg, db)
 	if err != nil {
 		logger.Fatalf("Creating new server error - %+v", err)
 	}

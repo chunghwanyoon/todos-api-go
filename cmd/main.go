@@ -1,5 +1,7 @@
 package main
 
+//go:generate sqlboiler --wipe --add-soft-deletes mysql
+
 import (
 	logger "github.com/sirupsen/logrus"
 	"os"
