@@ -1,0 +1,15 @@
+output = "models"
+wipe = true
+no-tests = true
+
+[mysql]
+dbname = "todos"
+user = "root"
+pass = "root"
+port = 3306
+host = "localhost"
+sslmode = "false"
+
+[auto-columns]
+created = "created_at"
+updated = "updated_at"
